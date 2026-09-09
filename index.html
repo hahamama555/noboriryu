@@ -1,1 +1,1073 @@
-# noboriryu
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport"
+      content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+
+<title>999コイン×47都道府県</title>
+
+<style>
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  background: #111827;
+  font-family:
+    -apple-system,
+    BlinkMacSystemFont,
+    "Hiragino Kaku Gothic ProN",
+    "Yu Gothic",
+    sans-serif;
+}
+
+.app {
+  width: 100%;
+  max-width: 520px;
+  margin: auto;
+  min-height: 100vh;
+  background: #111827;
+  color: white;
+}
+
+/* ヘッダー */
+.header {
+  padding: 14px 10px;
+  text-align: center;
+  background:
+    linear-gradient(135deg, #ff176f, #ff8a00);
+}
+
+.title {
+  font-size: 21px;
+  font-weight: 900;
+}
+
+.subtitle {
+  margin-top: 4px;
+  font-size: 12px;
+}
+
+/* 数字 */
+.stats {
+  display: flex;
+  gap: 7px;
+  margin-top: 10px;
+}
+
+.stat {
+  flex: 1;
+  padding: 7px 3px;
+  border-radius: 12px;
+  background: rgba(0,0,0,.35);
+}
+
+.stat strong {
+  display: block;
+  font-size: 22px;
+  font-weight: 900;
+}
+
+.stat span {
+  font-size: 10px;
+}
+
+/* 地図 */
+.map-area {
+  position: relative;
+  width: 100%;
+  background: white;
+  overflow: hidden;
+}
+
+#map {
+  display: block;
+  width: 100%;
+  height: auto;
+  user-select: none;
+  -webkit-user-drag: none;
+}
+
+/*
+  都道府県を塗るための透明キャンバス
+*/
+#paint {
+  position: absolute;
+  left: 0;
+  top: 0;
+
+  width: 100%;
+  height: 100%;
+
+  touch-action: none;
+}
+
+/* 操作ボタン */
+.controls {
+  padding: 12px;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+}
+
+button {
+  border: none;
+  border-radius: 15px;
+  padding: 14px 8px;
+  font-size: 15px;
+  font-weight: 900;
+}
+
+#giftButton {
+  grid-column: 1 / -1;
+
+  background:
+    linear-gradient(135deg, #ffd21a, #ff8a00);
+
+  color: #4a2100;
+}
+
+#giftButton.ready {
+  animation: pulse .8s infinite;
+}
+
+#undo {
+  background: #ef4444;
+  color: white;
+}
+
+#reset {
+  background: #374151;
+  color: white;
+}
+
+/* 説明 */
+.message {
+  padding: 0 12px 16px;
+  text-align: center;
+  font-size: 13px;
+  color: #dbeafe;
+  line-height: 1.5;
+}
+
+/* ポップアップ */
+.toast {
+  position: fixed;
+  left: 50%;
+  bottom: 25px;
+
+  transform:
+    translate(-50%, 20px);
+
+  padding: 12px 20px;
+
+  border-radius: 999px;
+
+  background: #ff2d6f;
+  color: white;
+
+  font-weight: 900;
+
+  opacity: 0;
+
+  pointer-events: none;
+
+  transition: .25s;
+
+  z-index: 100;
+}
+
+.toast.show {
+  opacity: 1;
+
+  transform:
+    translate(-50%, 0);
+}
+
+@keyframes pulse {
+
+  50% {
+    transform: scale(1.04);
+  }
+
+}
+</style>
+</head>
+
+
+<body>
+
+<div class="app">
+
+  <!-- =========================
+       ヘッダー
+  ========================== -->
+
+  <div class="header">
+
+    <div class="title">
+      🐉 999コイン × 47都道府県
+    </div>
+
+    <div class="subtitle">
+      のぼり竜1匹ごとに、好きな県を1つ塗ろう！
+    </div>
+
+
+    <div class="stats">
+
+      <div class="stat">
+        <strong id="finished">0</strong>
+        <span>塗った県</span>
+      </div>
+
+      <div class="stat">
+        <strong id="remaining">47</strong>
+        <span>残り</span>
+      </div>
+
+      <div class="stat">
+        <strong id="coins">0</strong>
+        <span>999コイン</span>
+      </div>
+
+    </div>
+
+  </div>
+
+
+  <!-- =========================
+       日本地図
+  ========================== -->
+
+  <div class="map-area">
+
+    <!--
+      ここに今回の日本地図画像を置く
+
+      ファイル名：
+      mapcrop.png
+    -->
+
+    <img
+      id="map"
+      src="mapcrop.png"
+      alt="47都道府県日本地図"
+    >
+
+    <!-- 塗りつぶし用 -->
+    <canvas id="paint"></canvas>
+
+  </div>
+
+
+  <!-- =========================
+       ボタン
+  ========================== -->
+
+  <div class="controls">
+
+    <button id="giftButton">
+      🐉 のぼり竜 999コイン受信
+    </button>
+
+    <button id="undo">
+      ↩ 1つ戻す
+    </button>
+
+    <button id="reset">
+      🔄 リセット
+    </button>
+
+  </div>
+
+
+  <div
+    id="message"
+    class="message"
+  >
+    「999コイン受信」→
+    塗りたい都道府県をタップ
+  </div>
+
+</div>
+
+
+<div
+  id="toast"
+  class="toast">
+</div>
+
+
+<script>
+
+/* ==========================================
+   基本設定
+========================================== */
+
+const mapImage =
+  document.getElementById("map");
+
+const paintCanvas =
+  document.getElementById("paint");
+
+const paintCtx =
+  paintCanvas.getContext("2d", {
+    willReadFrequently: true
+  });
+
+
+/*
+  元画像を解析するためのキャンバス
+*/
+const sourceCanvas =
+  document.createElement("canvas");
+
+const sourceCtx =
+  sourceCanvas.getContext("2d", {
+    willReadFrequently: true
+  });
+
+
+/*
+  日本地図画像のサイズ
+  mapcrop.png の実サイズに合わせる
+*/
+let MAP_WIDTH = 941;
+let MAP_HEIGHT = 870;
+
+
+/* ==========================================
+   状態
+========================================== */
+
+let giftReceived = false;
+
+let coinCount = 0;
+
+let prefectureCount = 0;
+
+
+/*
+  塗った状態を戻すための履歴
+*/
+let history = [];
+
+
+/* ==========================================
+   初期化
+========================================== */
+
+mapImage.onload = function () {
+
+  MAP_WIDTH =
+    mapImage.naturalWidth;
+
+  MAP_HEIGHT =
+    mapImage.naturalHeight;
+
+  sourceCanvas.width =
+    MAP_WIDTH;
+
+  sourceCanvas.height =
+    MAP_HEIGHT;
+
+  paintCanvas.width =
+    MAP_WIDTH;
+
+  paintCanvas.height =
+    MAP_HEIGHT;
+
+
+  /*
+    元の地図を解析用キャンバスへコピー
+  */
+  sourceCtx.drawImage(
+    mapImage,
+    0,
+    0,
+    MAP_WIDTH,
+    MAP_HEIGHT
+  );
+
+
+  updateDisplay();
+
+};
+
+
+if (mapImage.complete) {
+
+  if (mapImage.naturalWidth > 0) {
+
+    mapImage.onload();
+
+  }
+
+}
+
+
+/* ==========================================
+   表示更新
+========================================== */
+
+function updateDisplay() {
+
+  document.getElementById(
+    "finished"
+  ).textContent =
+    prefectureCount;
+
+
+  document.getElementById(
+    "remaining"
+  ).textContent =
+    47 - prefectureCount;
+
+
+  document.getElementById(
+    "coins"
+  ).textContent =
+    coinCount;
+
+
+  const message =
+    document.getElementById("message");
+
+
+  if (prefectureCount >= 47) {
+
+    message.textContent =
+      "🎊 47都道府県コンプリート！ 🎊";
+
+  }
+
+  else if (giftReceived) {
+
+    message.textContent =
+      "🐉 999コイン受信！ 塗りたい都道府県をタップ！";
+
+  }
+
+  else {
+
+    message.textContent =
+      "「999コイン受信」→ 塗りたい都道府県をタップ";
+
+  }
+
+}
+
+
+/* ==========================================
+   ポップアップ
+========================================== */
+
+function showToast(text) {
+
+  const toast =
+    document.getElementById("toast");
+
+  toast.textContent =
+    text;
+
+  toast.classList.add("show");
+
+
+  setTimeout(() => {
+
+    toast.classList.remove("show");
+
+  }, 1400);
+
+}
+
+
+/* ==========================================
+   999コイン受信
+========================================== */
+
+document
+  .getElementById("giftButton")
+  .addEventListener("click", function () {
+
+
+    if (prefectureCount >= 47) {
+
+      showToast(
+        "🎊 47都道府県コンプリート！"
+      );
+
+      return;
+
+    }
+
+
+    /*
+      999コインを1回受信
+    */
+
+    coinCount++;
+
+    giftReceived = true;
+
+
+    this.classList.add("ready");
+
+
+    updateDisplay();
+
+
+    showToast(
+      "🐉 999コイン受信！"
+    );
+
+  });
+
+
+/* ==========================================
+   白い部分かどうか判定
+========================================== */
+
+function isWhitePixel(data, index) {
+
+  const r =
+    data[index];
+
+  const g =
+    data[index + 1];
+
+  const b =
+    data[index + 2];
+
+
+  /*
+    白〜薄い白だけを対象にする
+  */
+
+  return (
+    r > 205 &&
+    g > 205 &&
+    b > 205 &&
+    Math.max(r,g,b)
+      -
+    Math.min(r,g,b)
+      <
+    45
+  );
+
+}
+
+
+/* ==========================================
+   塗りつぶし
+========================================== */
+
+function fillPrefecture(
+  startX,
+  startY
+) {
+
+
+  const imageData =
+    sourceCtx.getImageData(
+      0,
+      0,
+      MAP_WIDTH,
+      MAP_HEIGHT
+    );
+
+
+  const data =
+    imageData.data;
+
+
+  const start =
+    startY * MAP_WIDTH +
+    startX;
+
+
+  /*
+    白い場所以外をクリックした場合
+  */
+
+  if (
+    !isWhitePixel(
+      data,
+      start * 4
+    )
+  ) {
+
+    return false;
+
+  }
+
+
+  /*
+    訪問済み管理
+  */
+
+  const visited =
+    new Uint8Array(
+      MAP_WIDTH * MAP_HEIGHT
+    );
+
+
+  /*
+    幅優先探索
+  */
+
+  const stack = [
+    start
+  ];
+
+
+  const pixels = [];
+
+
+  while (
+    stack.length > 0
+  ) {
+
+
+    const pixel =
+      stack.pop();
+
+
+    const x =
+      pixel % MAP_WIDTH;
+
+
+    const y =
+      Math.floor(
+        pixel / MAP_WIDTH
+      );
+
+
+    if (
+      x < 0 ||
+      x >= MAP_WIDTH ||
+      y < 0 ||
+      y >= MAP_HEIGHT
+    ) {
+
+      continue;
+
+    }
+
+
+    if (
+      visited[pixel]
+    ) {
+
+      continue;
+
+    }
+
+
+    const index =
+      pixel * 4;
+
+
+    if (
+      !isWhitePixel(
+        data,
+        index
+      )
+    ) {
+
+      continue;
+
+    }
+
+
+    visited[pixel] = 1;
+
+
+    pixels.push(pixel);
+
+
+    /*
+      上
+    */
+
+    if (y > 0) {
+
+      stack.push(
+        pixel - MAP_WIDTH
+      );
+
+    }
+
+
+    /*
+      下
+    */
+
+    if (
+      y <
+      MAP_HEIGHT - 1
+    ) {
+
+      stack.push(
+        pixel + MAP_WIDTH
+      );
+
+    }
+
+
+    /*
+      左
+    */
+
+    if (x > 0) {
+
+      stack.push(
+        pixel - 1
+      );
+
+    }
+
+
+    /*
+      右
+    */
+
+    if (
+      x <
+      MAP_WIDTH - 1
+    ) {
+
+      stack.push(
+        pixel + 1
+      );
+
+    }
+
+  }
+
+
+  /*
+    小さすぎる領域は無視
+  */
+
+  if (
+    pixels.length < 100
+  ) {
+
+    return false;
+
+  }
+
+
+  /*
+    現在の塗り状態を保存
+    Undo用
+  */
+
+  history.push(
+    paintCtx.getImageData(
+      0,
+      0,
+      MAP_WIDTH,
+      MAP_HEIGHT
+    )
+  );
+
+
+  /*
+    現在の塗りつぶし画像
+  */
+
+  const paintData =
+    paintCtx.getImageData(
+      0,
+      0,
+      MAP_WIDTH,
+      MAP_HEIGHT
+    );
+
+
+  for (
+    const pixel of pixels
+  ) {
+
+
+    const index =
+      pixel * 4;
+
+
+    /*
+      ピンク
+    */
+
+    paintData.data[index] =
+      255;
+
+    paintData.data[index + 1] =
+      45;
+
+    paintData.data[index + 2] =
+      130;
+
+    /*
+      半透明
+    */
+
+    paintData.data[index + 3] =
+      150;
+
+  }
+
+
+  paintCtx.putImageData(
+    paintData,
+    0,
+    0
+  );
+
+
+  return true;
+
+}
+
+
+/* ==========================================
+   地図タップ
+========================================== */
+
+paintCanvas.addEventListener(
+  "pointerdown",
+  function(event) {
+
+
+    /*
+      999コインを受信していない
+    */
+
+    if (!giftReceived) {
+
+      showToast(
+        "先に999コインを受信してね！"
+      );
+
+      return;
+
+    }
+
+
+    /*
+      画面上の座標
+    */
+
+    const rect =
+      paintCanvas.getBoundingClientRect();
+
+
+    /*
+      実画像の座標へ変換
+    */
+
+    const x =
+      Math.floor(
+        (
+          event.clientX -
+          rect.left
+        )
+        *
+        MAP_WIDTH /
+        rect.width
+      );
+
+
+    const y =
+      Math.floor(
+        (
+          event.clientY -
+          rect.top
+        )
+        *
+        MAP_HEIGHT /
+        rect.height
+      );
+
+
+    /*
+      都道府県を塗る
+    */
+
+    const success =
+      fillPrefecture(
+        x,
+        y
+      );
+
+
+    if (!success) {
+
+      showToast(
+        "都道府県の中をタップしてね！"
+      );
+
+      return;
+
+    }
+
+
+    /*
+      成功
+    */
+
+    prefectureCount++;
+
+
+    giftReceived = false;
+
+
+    document
+      .getElementById("giftButton")
+      .classList.remove("ready");
+
+
+    updateDisplay();
+
+
+    showToast(
+      "🎉 1県追加！ " +
+      prefectureCount +
+      " / 47"
+    );
+
+
+    /*
+      全制覇
+    */
+
+    if (
+      prefectureCount >= 47
+    ) {
+
+      showToast(
+        "🎊 47都道府県コンプリート！"
+      );
+
+    }
+
+  }
+);
+
+
+/* ==========================================
+   1つ戻す
+========================================== */
+
+document
+  .getElementById("undo")
+  .addEventListener(
+    "click",
+    function() {
+
+
+      if (
+        history.length === 0
+      ) {
+
+        showToast(
+          "戻せる県がありません"
+        );
+
+        return;
+
+      }
+
+
+      /*
+        前の状態へ戻す
+      */
+
+      const previous =
+        history.pop();
+
+
+      paintCtx.putImageData(
+        previous,
+        0,
+        0
+      );
+
+
+      prefectureCount =
+        Math.max(
+          0,
+          prefectureCount - 1
+        );
+
+
+      giftReceived =
+        false;
+
+
+      updateDisplay();
+
+
+      showToast(
+        "↩ 1つ戻しました"
+      );
+
+    }
+  );
+
+
+/* ==========================================
+   リセット
+========================================== */
+
+document
+  .getElementById("reset")
+  .addEventListener(
+    "click",
+    function() {
+
+
+      paintCtx.clearRect(
+        0,
+        0,
+        MAP_WIDTH,
+        MAP_HEIGHT
+      );
+
+
+      history = [];
+
+
+      prefectureCount = 0;
+
+
+      coinCount = 0;
+
+
+      giftReceived = false;
+
+
+      document
+        .getElementById("giftButton")
+        .classList.remove("ready");
+
+
+      updateDisplay();
+
+
+      showToast(
+        "🔄 リセットしました"
+      );
+
+    }
+  );
+
+
+</script>
+
+</body>
+</html>
