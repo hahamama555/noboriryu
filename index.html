@@ -1,896 +1,470 @@
 <!DOCTYPE html>
 <html lang="ja">
 <head>
-
 <meta charset="UTF-8">
-
 <meta name="viewport"
-      content="width=device-width,
-               initial-scale=1.0,
-               maximum-scale=1.0,
-               user-scalable=no">
+      content="width=device-width, initial-scale=1.0,
+               maximum-scale=1.0, user-scalable=no">
 
-<title>47都道府県 塗り絵LIVE</title>
+<title>47都道府県 龍が空へ登る</title>
 
 <script src="https://cdn.jsdelivr.net/npm/d3@7"></script>
 
 <style>
-
 * {
   box-sizing: border-box;
 }
 
-html,
-body {
+html, body {
+  margin: 0;
   width: 100%;
   height: 100%;
-  margin: 0;
-  padding: 0;
+  overflow: hidden;
+  background: #ffffff;
+  font-family: sans-serif;
 }
 
 body {
-  background: #ffffff;
-
-  font-family:
-    -apple-system,
-    BlinkMacSystemFont,
-    "Hiragino Kaku Gothic ProN",
-    "Yu Gothic",
-    Meiryo,
-    sans-serif;
-
-  overflow: hidden;
+  display: flex;
+  justify-content: center;
 }
-
-
-/* =================================
-   9:16画面
-================================= */
 
 .app {
-
-  width: min(
-    100vw,
-    calc(100dvh * 9 / 16)
-  );
-
-  height: min(
-    100dvh,
-    calc(100vw * 16 / 9)
-  );
-
-  aspect-ratio: 9 / 16;
-
+  width: 100vw;
+  height: 100vh;
+  max-width: 600px;
   display: flex;
   flex-direction: column;
-
+  position: relative;
   overflow: hidden;
-
-  background: #fff;
 }
 
-
-/* =================================
-   タイトル
-================================= */
+.header {
+  flex: 0 0 auto;
+  text-align: center;
+  padding: 12px 8px 8px;
+  background: #fff;
+  z-index: 10;
+}
 
 .title {
-
-  flex: 0 0 auto;
-
-  margin: 5px 8px 0;
-  padding: 4px 5px;
-
-  font-size: clamp(
-    18px,
-    5vw,
-    28px
-  );
-
-  line-height: 1.2;
-
+  font-size: clamp(22px, 6vw, 34px);
   font-weight: 900;
-
-  text-align: center;
-
-  cursor: text;
-
+  line-height: 1.2;
   outline: none;
-
-  word-break: break-word;
-
-  min-height: 1.2em;
 }
 
-
-/* タイトル編集中 */
-
-.title:focus {
-
-  background: #f5f5f5;
-
-  border-radius: 8px;
+.subtitle {
+  margin-top: 5px;
+  font-size: clamp(13px, 3.5vw, 18px);
+  font-weight: bold;
 }
-
-
-/* =================================
-   サブタイトル
-================================= */
-
-.sub {
-
-  flex: 0 0 auto;
-
-  text-align: center;
-
-  font-size: clamp(
-    10px,
-    2.7vw,
-    14px
-  );
-
-  font-weight: 700;
-
-  color: #555;
-
-  margin: 2px 5px 2px;
-}
-
-
-/* =================================
-   地図エリア
-================================= */
-
-.mapArea {
-
-  flex: 1 1 auto;
-
-  min-height: 0;
-
-  width: 100%;
-
-  overflow: hidden;
-
-  display: flex;
-
-  align-items: center;
-
-  justify-content: center;
-}
-
-
-/* =================================
-   地図
-================================= */
-
-#map {
-
-  width: 100%;
-  height: 100%;
-
-  display: block;
-
-  touch-action: manipulation;
-}
-
-
-/* =================================
-   都道府県
-================================= */
-
-.pref {
-
-  fill: #ffffff;
-
-  fill-opacity: 1;
-
-  stroke: #333333;
-
-  stroke-width: 0.8;
-
-  cursor: pointer;
-
-  transition:
-    fill 0.12s ease,
-    fill-opacity 0.12s ease;
-}
-
-
-/* =================================
-   色が付いた県
-================================= */
-
-.pref.active {
-
-  fill: #ff8a3d;
-
-  fill-opacity: 0.92;
-
-  stroke: #9a4b12;
-
-  stroke-width: 1.3;
-}
-
-
-/* =================================
-   メッセージ
-================================= */
-
-#message {
-
-  flex: 0 0 auto;
-
-  text-align: center;
-
-  font-size: clamp(
-    11px,
-    3vw,
-    15px
-  );
-
-  font-weight: 800;
-
-  min-height: 25px;
-
-  padding: 2px 5px;
-
-  display: flex;
-
-  align-items: center;
-
-  justify-content: center;
-}
-
-
-/* =================================
-   カウンター
-================================= */
 
 .stats {
-
-  flex: 0 0 auto;
-
   display: flex;
-
   justify-content: center;
-
-  gap: 25px;
-
-  margin: 2px 0 4px;
-
-  font-size: clamp(
-    11px,
-    3vw,
-    14px
-  );
-
-  font-weight: 700;
+  gap: 18px;
+  margin-top: 8px;
+  font-size: 14px;
+  font-weight: bold;
 }
 
-.num {
-
-  font-size: clamp(
-    18px,
-    5vw,
-    23px
-  );
-
-  font-weight: 900;
+.mapArea {
+  flex: 1;
+  min-height: 0;
+  position: relative;
+  overflow: hidden;
 }
 
-
-/* =================================
-   凡例
-================================= */
-
-.legend {
-
-  flex: 0 0 auto;
-
-  display: flex;
-
-  justify-content: center;
-
-  gap: 15px;
-
-  margin-bottom: 3px;
-
-  font-size: 10px;
-
-  color: #555;
+svg {
+  width: 100%;
+  height: 100%;
+  display: block;
 }
 
-.dot {
-
-  display: inline-block;
-
-  width: 10px;
-  height: 10px;
-
-  border-radius: 3px;
-
-  vertical-align: -1px;
-
-  margin-right: 3px;
+.prefecture {
+  fill: #ffffff;
+  stroke: #555;
+  stroke-width: 0.8;
+  cursor: pointer;
+  transition: fill 0.15s ease;
 }
 
-.orange {
-
-  background: #ff8a3d;
+.prefecture.active {
+  fill: #ff8a00;
 }
 
-.white {
-
-  background: #fff;
-
-  border: 1px solid #555;
+.prefecture:hover {
+  filter: brightness(0.96);
 }
 
-
-/* =================================
-   説明
-================================= */
-
-.note {
-
-  flex: 0 0 auto;
-
-  text-align: center;
-
-  font-size: 8px;
-
-  color: #999;
-
-  margin-bottom: 3px;
+/* 龍 */
+.dragon {
+  pointer-events: none;
+  user-select: none;
+  font-size: 48px;
 }
 
+/* キラキラ */
+.sparkle {
+  pointer-events: none;
+  user-select: none;
+  font-size: 22px;
+}
 
-/* =================================
-   読み込み
-================================= */
-
-.loading {
-
+.message {
   position: absolute;
-
-  top: 50%;
-
   left: 50%;
-
-  transform:
-    translate(-50%, -50%);
-
-  text-align: center;
-
-  color: #777;
-
-  font-size: 13px;
+  bottom: 18px;
+  transform: translateX(-50%);
+  background: rgba(0,0,0,.72);
+  color: #fff;
+  padding: 8px 16px;
+  border-radius: 999px;
+  font-size: 14px;
+  font-weight: bold;
+  opacity: 0;
+  transition: opacity .2s;
+  z-index: 20;
+  white-space: nowrap;
 }
 
-
-/* =================================
-   COMPLETE
-================================= */
+.message.show {
+  opacity: 1;
+}
 
 .complete {
-
-  position: fixed;
-
+  position: absolute;
   inset: 0;
-
-  display: none;
-
+  display: flex;
   align-items: center;
-
   justify-content: center;
-
-  background:
-    rgba(255,255,255,0.94);
-
-  z-index: 1000;
+  background: rgba(255,255,255,.75);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity .3s;
+  z-index: 30;
 }
 
 .complete.show {
-
-  display: flex;
+  opacity: 1;
 }
 
 .completeBox {
-
-  width: 85vw;
-
-  max-width: 400px;
-
-  padding: 28px 20px;
-
-  text-align: center;
-
   background: #fff;
-
-  border: 3px solid #111;
-
-  border-radius: 20px;
-
-  box-shadow:
-    0 8px 30px
-    rgba(0,0,0,0.18);
+  border-radius: 22px;
+  padding: 25px 28px;
+  text-align: center;
+  box-shadow: 0 8px 30px rgba(0,0,0,.18);
 }
 
-.completeTitle {
+.completeBox .big {
+  font-size: 42px;
+}
 
-  font-size: 30px;
-
+.completeBox .text {
+  margin-top: 5px;
+  font-size: 22px;
   font-weight: 900;
-
-  margin-bottom: 10px;
 }
-
-.completeText {
-
-  font-size: 16px;
-
-  font-weight: 700;
-
-  line-height: 1.6;
-
-  margin-bottom: 18px;
-}
-
-.completeBox button {
-
-  border: none;
-
-  border-radius: 999px;
-
-  padding: 12px 25px;
-
-  background: #111;
-
-  color: #fff;
-
-  font-weight: 900;
-
-  font-size: 15px;
-}
-
 </style>
-
 </head>
-
 
 <body>
 
-
 <div class="app">
 
+  <div class="header">
 
-  <!-- =========================
-       タイトル
-  ========================== -->
+    <!-- ここはタップしてタイトル変更可能 -->
+    <div class="title"
+         contenteditable="true"
+         spellcheck="false">
+      47都道府県 🐉龍の旅
+    </div>
 
-  <div
-    id="editableTitle"
-    class="title"
-    contenteditable="true"
-    spellcheck="false"
-  >🎁 999コインで47都道府県を塗ろう！</div>
+    <div class="subtitle">
+      都道府県をタップすると龍が空へ登ります
+    </div>
 
+    <div class="stats">
+      <div>
+        塗った県：
+        <span id="count">0</span> / 47
+      </div>
 
-  <div class="sub">
-    都道府県をタップして色を塗ろう！
+      <div>
+        999コイン：
+        <span id="coins">0</span>
+      </div>
+    </div>
+
   </div>
-
-
-  <!-- =========================
-       地図
-  ========================== -->
 
   <div class="mapArea">
+    <svg id="map"
+         viewBox="0 0 900 760"
+         preserveAspectRatio="xMidYMid meet">
+    </svg>
 
-    <div
-      id="loading"
-      class="loading"
-    >
-      47都道府県の地図を読み込んでいます…
+    <div id="message" class="message"></div>
+
+    <div id="complete" class="complete">
+      <div class="completeBox">
+        <div class="big">🐉✨🎊</div>
+        <div class="text">
+          47都道府県コンプリート！
+        </div>
+      </div>
     </div>
-
-    <svg
-      id="map"
-      viewBox="0 0 900 760"
-      preserveAspectRatio="xMidYMid meet"
-      style="display:none"
-    ></svg>
-
-  </div>
-
-
-  <!-- =========================
-       メッセージ
-  ========================== -->
-
-  <div id="message">
-    都道府県をタップしてください
-  </div>
-
-
-  <!-- =========================
-       カウンター
-  ========================== -->
-
-  <div class="stats">
-
-    <div>
-      塗った県
-      <span
-        id="count"
-        class="num"
-      >0</span>
-      / 47
-    </div>
-
-    <div>
-      999コイン
-      <span
-        id="coins"
-        class="num"
-      >0</span>
-    </div>
-
-  </div>
-
-
-  <!-- =========================
-       凡例
-  ========================== -->
-
-  <div class="legend">
-
-    <span>
-      <i class="dot orange"></i>
-      塗り済み
-    </span>
-
-    <span>
-      <i class="dot white"></i>
-      未塗色
-    </span>
-
-  </div>
-
-
-  <div class="note">
-    ※もう一度タップすると白に戻ります
   </div>
 
 </div>
-
-
-<!-- =========================
-     COMPLETE
-========================= -->
-
-<div
-  id="complete"
-  class="complete"
->
-
-  <div class="completeBox">
-
-    <div class="completeTitle">
-      🎊 COMPLETE!
-    </div>
-
-    <div class="completeText">
-      47都道府県<br>
-      全部塗れました！<br>
-      おめでとうございます🎉
-    </div>
-
-    <button id="closeComplete">
-      閉じる
-    </button>
-
-  </div>
-
-</div>
-
 
 <script>
-
-
-/* ==========================================
-   GeoJSON
-========================================== */
 
 const GEOJSON_URL =
   "https://raw.githubusercontent.com/four4to6/47-prefectures/main/data/prefectures.geojson";
 
+const svg = d3.select("#map");
 
-/* ==========================================
-   SVG
-========================================== */
+const countEl = document.getElementById("count");
+const coinsEl = document.getElementById("coins");
+const messageEl = document.getElementById("message");
+const completeEl = document.getElementById("complete");
+const titleEl = document.querySelector(".title");
 
-const svg =
-  d3.select("#map");
-
-
-/* ==========================================
-   状態
-========================================== */
-
-const painted =
-  new Set();
-
+let painted = new Set();
 let coins = 0;
 
 
-/* ==========================================
-   HTML
-========================================== */
-
-const countEl =
-  document.getElementById("count");
-
-const coinsEl =
-  document.getElementById("coins");
-
-const messageEl =
-  document.getElementById("message");
-
-const titleEl =
-  document.getElementById("editableTitle");
-
-const completeEl =
-  document.getElementById("complete");
-
-
-/* ==========================================
+/* =========================
    タイトル保存
-========================================== */
+========================= */
 
-const savedTitle =
-  localStorage.getItem(
-    "prefecturePaintTitle"
+const savedTitle = localStorage.getItem("dragonTitle");
+
+if (savedTitle) {
+  titleEl.textContent = savedTitle;
+}
+
+titleEl.addEventListener("input", () => {
+  localStorage.setItem(
+    "dragonTitle",
+    titleEl.textContent
   );
+});
 
-if (savedTitle !== null) {
 
-  titleEl.textContent =
-    savedTitle;
+/* =========================
+   メッセージ
+========================= */
 
+let messageTimer;
+
+function showMessage(text) {
+
+  messageEl.textContent = text;
+  messageEl.classList.add("show");
+
+  clearTimeout(messageTimer);
+
+  messageTimer = setTimeout(() => {
+    messageEl.classList.remove("show");
+  }, 1800);
 }
 
 
-titleEl.addEventListener(
-  "input",
-  function () {
-
-    localStorage.setItem(
-      "prefecturePaintTitle",
-      titleEl.textContent.trim()
-    );
-
-  }
-);
-
-
-/* Enterで改行しない */
-
-titleEl.addEventListener(
-  "keydown",
-  function(event) {
-
-    if (
-      event.key === "Enter"
-    ) {
-
-      event.preventDefault();
-
-      titleEl.blur();
-
-    }
-
-  }
-);
-
-
-/* ==========================================
-   都道府県名
-========================================== */
-
-function getName(feature) {
-
-  const p =
-    feature.properties || {};
-
-  return (
-    p.name ||
-    p.nam ||
-    p.NAME_1 ||
-    p.NAME ||
-    p.prefecture ||
-    p.pref ||
-    p.都道府県 ||
-    ""
-  );
-
-}
-
-
-/* ==========================================
+/* =========================
    数字更新
-========================================== */
+========================= */
 
 function updateStats() {
 
-  countEl.textContent =
-    painted.size;
+  countEl.textContent = painted.size;
+  coinsEl.textContent = coins;
 
-  coinsEl.textContent =
-    coins;
-
+  if (painted.size === 47) {
+    completeEl.classList.add("show");
+  } else {
+    completeEl.classList.remove("show");
+  }
 }
 
 
-/* ==========================================
-   ★ 都道府県タップ
-========================================== */
+/* =========================
+   龍の演出
+========================= */
 
-function togglePrefecture(
-  name,
-  element
-) {
+function dragonAnimation(x, y) {
 
-  if (!name) {
-    return;
-  }
+  /*
+   * 龍本体
+   */
+  const dragon = svg.append("text")
+    .attr("class", "dragon")
+    .attr("x", x)
+    .attr("y", y)
+    .attr("text-anchor", "middle")
+    .attr("dominant-baseline", "middle")
+    .style("opacity", 0)
+    .text("🐉");
 
 
-  /* ======================================
-     すでに色が付いている
-     ↓
-     白に戻す
-  ====================================== */
-
-  if (
-    element.classList.contains(
-      "active"
+  /*
+   * 登場
+   */
+  dragon
+    .transition()
+    .duration(150)
+    .style("opacity", 1)
+    .attr("transform",
+      `translate(0,-10) scale(1.0)`
     )
-  ) {
-
-    /* CSSクラスを確実に削除 */
-
-    element.classList.remove(
-      "active"
-    );
 
 
-    /* Setから削除 */
+    /*
+     * 上空へ飛んでいく
+     */
+    .transition()
+    .duration(1200)
+    .ease(d3.easeCubicOut)
+    .attr(
+      "transform",
+      `translate(45,-300) rotate(-12) scale(1.35)`
+    )
+    .style("opacity", 0)
+
+
+    /*
+     * 終わったら削除
+     */
+    .on("end", function() {
+      d3.select(this).remove();
+    });
+
+
+  /*
+   * キラキラを複数出す
+   */
+  const sparkleData = [
+    { dx: -25, dy: 5 },
+    { dx: 25, dy: -10 },
+    { dx: -10, dy: -35 },
+    { dx: 15, dy: -50 }
+  ];
+
+  sparkleData.forEach((s, i) => {
+
+    const sparkle = svg.append("text")
+      .attr("class", "sparkle")
+      .attr("x", x + s.dx)
+      .attr("y", y + s.dy)
+      .attr("text-anchor", "middle")
+      .style("opacity", 0)
+      .text(i % 2 === 0 ? "✨" : "⭐");
+
+    sparkle
+      .transition()
+      .delay(i * 80)
+      .duration(150)
+      .style("opacity", 1)
+
+      .transition()
+      .duration(900)
+      .ease(d3.easeCubicOut)
+      .attr(
+        "transform",
+        `translate(${s.dx * 0.5},-220)`
+      )
+      .style("opacity", 0)
+
+      .on("end", function() {
+        d3.select(this).remove();
+      });
+
+  });
+}
+
+
+/* =========================
+   都道府県タップ
+========================= */
+
+function togglePrefecture(name, element, d) {
+
+  if (!name) return;
+
+
+  /*
+   * すでに塗られている場合
+   * → 白に戻す
+   */
+  if (element.classList.contains("active")) {
+
+    element.classList.remove("active");
 
     painted.delete(name);
 
-
-    /* コイン数も1減らす */
-
-    coins =
-      Math.max(
-        0,
-        coins - 1
-      );
-
-
-    /* 表示更新 */
+    coins = Math.max(0, coins - 1);
 
     updateStats();
 
-
-    messageEl.textContent =
-      "↩️ " +
-      name +
-      " を白に戻しました。";
-
+    showMessage(
+      "↩️ " + name + " を白に戻しました"
+    );
 
     return;
   }
 
 
-  /* ======================================
-     色が付いていない
-     ↓
-     オレンジにする
-  ====================================== */
-
-  element.classList.add(
-    "active"
-  );
-
+  /*
+   * 新しく塗る
+   */
+  element.classList.add("active");
 
   painted.add(name);
 
-
   coins++;
-
 
   updateStats();
 
 
-  messageEl.textContent =
-    "🎉 " +
-    name +
-    " を塗りました！";
+  /*
+   * クリックされた県の中心座標
+   */
+  const [x, y] = path.centroid(d);
 
 
-  /* ======================================
-     47県完成
-  ====================================== */
+  /*
+   * 龍を空へ飛ばす
+   */
+  dragonAnimation(x, y);
 
-  if (
-    painted.size === 47
-  ) {
 
-    messageEl.textContent =
-      "🎊 47都道府県コンプリート！";
-
-    completeEl.classList.add(
-      "show"
-    );
-
-  }
-
+  showMessage(
+    "🐉 " + name + " から龍が空へ！✨"
+  );
 }
 
 
-/* ==========================================
+/* =========================
    地図読み込み
-========================================== */
+========================= */
 
-fetch(GEOJSON_URL)
-
-  .then(function(response) {
-
-    if (!response.ok) {
-
-      throw new Error(
-        "GeoJSON " +
-        response.status
-      );
-
-    }
-
-    return response.json();
-
-  })
+let path;
 
 
-  .then(function(data) {
+/*
+ * GeoJSON取得
+ */
 
+d3.json(GEOJSON_URL)
+  .then(data => {
 
-    /* ======================================
-       47都道府県を取得
-    ====================================== */
-
-    const features =
-      data.features.filter(
-        function(feature) {
-
-          const name =
-            getName(feature);
-
-          return (
-            name &&
-            name !== "日本" &&
-            !name.includes("離島") &&
-            !name.includes("minor")
-          );
-
-        }
-      );
-
-
-    /* ======================================
-       地図を最大サイズにする
-    ====================================== */
-
+    /*
+     * 地図を画面いっぱいに配置
+     */
     const projection =
       d3.geoMercator()
         .fitExtent(
@@ -898,134 +472,69 @@ fetch(GEOJSON_URL)
             [5, 5],
             [895, 755]
           ],
-          {
-            type:
-              "FeatureCollection",
-
-            features:
-              features
-          }
+          data
         );
 
 
-    const path =
-      d3.geoPath(
-        projection
-      );
+    path = d3.geoPath()
+      .projection(projection);
 
 
-    /* ======================================
-       地図描画
-    ====================================== */
-
-    svg
-      .selectAll("path")
-      .data(features)
-      .join("path")
-
-      .attr(
-        "class",
-        "pref"
-      )
-
-      .attr(
-        "d",
-        function(d) {
-
-          return path(d);
-
-        }
-      )
-
-      .attr(
-        "data-name",
-        function(d) {
-
-          return getName(d);
-
-        }
-      )
+    /*
+     * 都道府県描画
+     */
+    svg.selectAll(".prefecture")
+      .data(data.features)
+      .enter()
+      .append("path")
+      .attr("class", "prefecture")
+      .attr("d", path)
 
 
-      /* ==================================
-         ★ タップ
-      ================================== */
+      /*
+       * タップ処理
+       */
+      .on("click", function(event, d) {
 
-      .on(
-        "click",
-        function(event, d) {
+        const element = this;
 
-          event.preventDefault();
+        const name =
+          d.properties.name ||
+          d.properties.nam_ja ||
+          d.properties.N03_001 ||
+          d.properties.prefecture;
 
-          event.stopPropagation();
+        togglePrefecture(
+          name,
+          element,
+          d
+        );
 
-          const name =
-            getName(d);
-
-          togglePrefecture(
-            name,
-            this
-          );
-
-        }
-      )
-
-
-      .append("title")
-
-      .text(
-        function(d) {
-
-          return getName(d);
-
-        }
-      );
-
-
-    /* 読み込み完了 */
-
-    document
-      .getElementById("loading")
-      .style.display =
-        "none";
-
-
-    svg.style(
-      "display",
-      "block"
-    );
-
+      });
 
   })
 
 
-  .catch(function(error) {
+  .catch(error => {
 
     console.error(error);
 
-    document
-      .getElementById("loading")
-      .innerHTML =
-        "地図の読み込みに失敗しました。<br>" +
-        "インターネット接続を確認してください。";
+    showMessage(
+      "地図の読み込みに失敗しました"
+    );
 
   });
 
 
-/* ==========================================
-   COMPLETEを閉じる
-========================================== */
+/* =========================
+   コンプリート画面
+========================= */
 
-document
-  .getElementById("closeComplete")
-  .onclick = function() {
+completeEl.addEventListener("click", () => {
 
-    completeEl.classList.remove(
-      "show"
-    );
+  completeEl.classList.remove("show");
 
-  };
-
+});
 
 </script>
 
