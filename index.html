@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="ja">
 <head>
+
 <meta charset="UTF-8">
 
 <meta name="viewport"
@@ -11,10 +12,10 @@
 
 <title>47都道府県 塗り絵LIVE</title>
 
-<!-- D3.js -->
 <script src="https://cdn.jsdelivr.net/npm/d3@7"></script>
 
 <style>
+
 * {
   box-sizing: border-box;
 }
@@ -29,6 +30,7 @@ body {
 
 body {
   background: #ffffff;
+
   font-family:
     -apple-system,
     BlinkMacSystemFont,
@@ -37,20 +39,25 @@ body {
     Meiryo,
     sans-serif;
 
-  display: flex;
-  justify-content: center;
-  align-items: center;
-
   overflow: hidden;
 }
 
-/* =========================
-   9:16 本体
-========================= */
+
+/* =================================
+   9:16画面
+================================= */
 
 .app {
-  width: min(100vw, calc(100dvh * 9 / 16));
-  height: min(100dvh, calc(100vw * 16 / 9));
+
+  width: min(
+    100vw,
+    calc(100dvh * 9 / 16)
+  );
+
+  height: min(
+    100dvh,
+    calc(100vw * 16 / 9)
+  );
 
   aspect-ratio: 9 / 16;
 
@@ -60,28 +67,31 @@ body {
   overflow: hidden;
 
   background: #fff;
-  color: #111;
 }
 
-/* =========================
+
+/* =================================
    タイトル
-========================= */
+================================= */
 
 .title {
+
   flex: 0 0 auto;
 
-  margin: 8px 8px 3px;
-  padding: 7px 10px;
+  margin: 5px 8px 0;
+  padding: 4px 5px;
 
-  font-size: clamp(18px, 5vw, 28px);
+  font-size: clamp(
+    18px,
+    5vw,
+    28px
+  );
+
   line-height: 1.2;
 
   font-weight: 900;
+
   text-align: center;
-
-  border-radius: 12px;
-
-  min-height: 1.2em;
 
   cursor: text;
 
@@ -89,86 +99,72 @@ body {
 
   word-break: break-word;
 
-  user-select: text;
+  min-height: 1.2em;
 }
+
 
 /* タイトル編集中 */
+
 .title:focus {
+
   background: #f5f5f5;
-  box-shadow: 0 0 0 2px #ddd inset;
+
+  border-radius: 8px;
 }
 
-/* 空欄の場合 */
-.title:empty::before {
-  content: "ここをタップしてタイトルを入力";
-  color: #aaa;
-}
 
-/* =========================
+/* =================================
    サブタイトル
-========================= */
+================================= */
 
 .sub {
+
   flex: 0 0 auto;
 
   text-align: center;
 
-  font-size: clamp(10px, 2.8vw, 14px);
+  font-size: clamp(
+    10px,
+    2.7vw,
+    14px
+  );
 
   font-weight: 700;
 
   color: #555;
 
-  margin: 0 8px 5px;
+  margin: 2px 5px 2px;
 }
 
-/* =========================
-   地図パネル
-========================= */
 
-.panel {
-  flex: 1 1 auto;
+/* =================================
+   地図エリア
+================================= */
 
-  min-height: 0;
+.mapArea {
 
-  display: flex;
-  flex-direction: column;
-
-  margin: 0 7px 7px;
-
-  border: 2px solid #111;
-
-  border-radius: 16px;
-
-  padding: 7px;
-
-  overflow: hidden;
-}
-
-/* =========================
-   地図
-========================= */
-
-#mapWrap {
   flex: 1 1 auto;
 
   min-height: 0;
 
   width: 100%;
 
-  display: flex;
-
-  justify-content: center;
-  align-items: center;
-
   overflow: hidden;
 
-  background: #fff;
+  display: flex;
 
-  border-radius: 10px;
+  align-items: center;
+
+  justify-content: center;
 }
 
+
+/* =================================
+   地図
+================================= */
+
 #map {
+
   width: 100%;
   height: 100%;
 
@@ -177,58 +173,66 @@ body {
   touch-action: manipulation;
 }
 
-/* =========================
+
+/* =================================
    都道府県
-========================= */
+================================= */
 
 .pref {
+
   fill: #ffffff;
 
-  stroke: #333;
+  fill-opacity: 1;
+
+  stroke: #333333;
 
   stroke-width: 0.8;
 
   cursor: pointer;
 
   transition:
-    fill 0.15s ease,
-    fill-opacity 0.15s ease;
+    fill 0.12s ease,
+    fill-opacity 0.12s ease;
 }
 
-/* マウスを乗せたとき */
-.pref:hover {
-  fill: #ffe27a;
-}
 
-/* 色が付いた状態 */
+/* =================================
+   色が付いた県
+================================= */
+
 .pref.active {
+
   fill: #ff8a3d;
 
-  fill-opacity: 0.9;
+  fill-opacity: 0.92;
 
   stroke: #9a4b12;
 
   stroke-width: 1.3;
 }
 
-/* =========================
+
+/* =================================
    メッセージ
-========================= */
+================================= */
 
 #message {
+
   flex: 0 0 auto;
 
   text-align: center;
 
+  font-size: clamp(
+    11px,
+    3vw,
+    15px
+  );
+
   font-weight: 800;
 
-  font-size: clamp(11px, 3.2vw, 16px);
+  min-height: 25px;
 
-  line-height: 1.25;
-
-  min-height: 28px;
-
-  margin: 5px 2px 3px;
+  padding: 2px 5px;
 
   display: flex;
 
@@ -237,99 +241,124 @@ body {
   justify-content: center;
 }
 
-/* =========================
-   統計
-========================= */
+
+/* =================================
+   カウンター
+================================= */
 
 .stats {
+
   flex: 0 0 auto;
 
   display: flex;
 
   justify-content: center;
 
-  gap: 22px;
+  gap: 25px;
 
-  margin-top: 4px;
+  margin: 2px 0 4px;
 
-  font-size: clamp(11px, 3.2vw, 14px);
+  font-size: clamp(
+    11px,
+    3vw,
+    14px
+  );
 
   font-weight: 700;
 }
 
 .num {
-  font-size: clamp(18px, 5vw, 23px);
+
+  font-size: clamp(
+    18px,
+    5vw,
+    23px
+  );
 
   font-weight: 900;
 }
 
-/* =========================
+
+/* =================================
    凡例
-========================= */
+================================= */
 
 .legend {
+
   flex: 0 0 auto;
 
   display: flex;
 
   justify-content: center;
 
-  gap: 14px;
+  gap: 15px;
 
-  margin-top: 3px;
+  margin-bottom: 3px;
 
-  font-size: clamp(9px, 2.7vw, 12px);
+  font-size: 10px;
 
   color: #555;
 }
 
 .dot {
+
   display: inline-block;
 
-  width: 11px;
-  height: 11px;
+  width: 10px;
+  height: 10px;
 
   border-radius: 3px;
 
-  vertical-align: -2px;
+  vertical-align: -1px;
 
   margin-right: 3px;
 }
 
 .orange {
+
   background: #ff8a3d;
 }
 
 .white {
+
   background: #fff;
 
   border: 1px solid #555;
 }
 
-/* =========================
+
+/* =================================
    説明
-========================= */
+================================= */
 
 .note {
+
   flex: 0 0 auto;
 
-  font-size: 9px;
-
-  color: #888;
-
-  line-height: 1.3;
-
-  margin-top: 3px;
-
   text-align: center;
+
+  font-size: 8px;
+
+  color: #999;
+
+  margin-bottom: 3px;
 }
 
-/* =========================
+
+/* =================================
    読み込み
-========================= */
+================================= */
 
 .loading {
-  padding: 30px 10px;
+
+  position: absolute;
+
+  top: 50%;
+
+  left: 50%;
+
+  transform:
+    translate(-50%, -50%);
 
   text-align: center;
 
@@ -338,11 +367,13 @@ body {
   font-size: 13px;
 }
 
-/* =========================
+
+/* =================================
    COMPLETE
-========================= */
+================================= */
 
 .complete {
+
   position: fixed;
 
   inset: 0;
@@ -353,33 +384,41 @@ body {
 
   justify-content: center;
 
-  background: rgba(255,255,255,0.92);
+  background:
+    rgba(255,255,255,0.94);
 
   z-index: 1000;
 }
 
 .complete.show {
+
   display: flex;
 }
 
 .completeBox {
-  width: min(86vw, 420px);
+
+  width: 85vw;
+
+  max-width: 400px;
+
+  padding: 28px 20px;
 
   text-align: center;
 
-  padding: 28px 20px;
+  background: #fff;
 
   border: 3px solid #111;
 
   border-radius: 20px;
 
-  background: #fff;
-
-  box-shadow: 0 8px 30px rgba(0,0,0,0.15);
+  box-shadow:
+    0 8px 30px
+    rgba(0,0,0,0.18);
 }
 
 .completeTitle {
-  font-size: clamp(24px, 7vw, 36px);
+
+  font-size: 30px;
 
   font-weight: 900;
 
@@ -387,6 +426,7 @@ body {
 }
 
 .completeText {
+
   font-size: 16px;
 
   font-weight: 700;
@@ -397,31 +437,35 @@ body {
 }
 
 .completeBox button {
-  border: 0;
+
+  border: none;
 
   border-radius: 999px;
+
+  padding: 12px 25px;
 
   background: #111;
 
   color: #fff;
 
-  padding: 12px 24px;
-
   font-weight: 900;
 
   font-size: 15px;
 }
+
 </style>
+
 </head>
 
 
 <body>
 
+
 <div class="app">
+
 
   <!-- =========================
        タイトル
-       タップして変更できます
   ========================== -->
 
   <div
@@ -429,12 +473,8 @@ body {
     class="title"
     contenteditable="true"
     spellcheck="false"
-  >
-    🎁 999コインで47都道府県を塗ろう！
-  </div>
+  >🎁 999コインで47都道府県を塗ろう！</div>
 
-
-  <!-- サブタイトル -->
 
   <div class="sub">
     都道府県をタップして色を塗ろう！
@@ -442,90 +482,91 @@ body {
 
 
   <!-- =========================
-       メインパネル
+       地図
   ========================== -->
 
-  <div class="panel">
+  <div class="mapArea">
 
-    <!-- 地図 -->
-
-    <div id="mapWrap">
-
-      <div id="loading" class="loading">
-        47都道府県の地図を読み込んでいます…
-      </div>
-
-      <svg
-        id="map"
-        viewBox="0 0 900 760"
-        preserveAspectRatio="xMidYMid meet"
-        style="display:none"
-      ></svg>
-
+    <div
+      id="loading"
+      class="loading"
+    >
+      47都道府県の地図を読み込んでいます…
     </div>
 
+    <svg
+      id="map"
+      viewBox="0 0 900 760"
+      preserveAspectRatio="xMidYMid meet"
+      style="display:none"
+    ></svg>
 
-    <!-- メッセージ -->
+  </div>
 
-    <div id="message">
-      色を塗りたい都道府県をタップしてください
+
+  <!-- =========================
+       メッセージ
+  ========================== -->
+
+  <div id="message">
+    都道府県をタップしてください
+  </div>
+
+
+  <!-- =========================
+       カウンター
+  ========================== -->
+
+  <div class="stats">
+
+    <div>
+      塗った県
+      <span
+        id="count"
+        class="num"
+      >0</span>
+      / 47
     </div>
 
-
-    <!-- 統計 -->
-
-    <div class="stats">
-
-      <div>
-        塗った県
-        <span
-          class="num"
-          id="count"
-        >0</span>
-        / 47
-      </div>
-
-      <div>
-        999コイン
-        <span
-          class="num"
-          id="coins"
-        >0</span>
-      </div>
-
+    <div>
+      999コイン
+      <span
+        id="coins"
+        class="num"
+      >0</span>
     </div>
 
-
-    <!-- 凡例 -->
-
-    <div class="legend">
-
-      <span>
-        <i class="dot orange"></i>
-        塗り済み
-      </span>
-
-      <span>
-        <i class="dot white"></i>
-        未塗色
-      </span>
-
-    </div>
+  </div>
 
 
-    <!-- 説明 -->
+  <!-- =========================
+       凡例
+  ========================== -->
 
-    <div class="note">
-      ※都道府県をもう一度タップすると元の色に戻ります
-    </div>
+  <div class="legend">
 
+    <span>
+      <i class="dot orange"></i>
+      塗り済み
+    </span>
+
+    <span>
+      <i class="dot white"></i>
+      未塗色
+    </span>
+
+  </div>
+
+
+  <div class="note">
+    ※もう一度タップすると白に戻ります
   </div>
 
 </div>
 
 
 <!-- =========================
-     COMPLETE画面
+     COMPLETE
 ========================= -->
 
 <div
@@ -556,48 +597,45 @@ body {
 
 <script>
 
-/* =====================================================
+
+/* ==========================================
    GeoJSON
-===================================================== */
+========================================== */
 
 const GEOJSON_URL =
   "https://raw.githubusercontent.com/four4to6/47-prefectures/main/data/prefectures.geojson";
 
 
-/* =====================================================
-   D3
-===================================================== */
+/* ==========================================
+   SVG
+========================================== */
 
-const svg = d3.select("#map");
-
-
-/* =====================================================
-   状態管理
-===================================================== */
-
-const state = {
-
-  // 色が付いている都道府県
-  painted: new Set(),
-
-  // 999コイン数
-  coins: 0
-
-};
+const svg =
+  d3.select("#map");
 
 
-/* =====================================================
-   HTML要素
-===================================================== */
+/* ==========================================
+   状態
+========================================== */
 
-const messageEl =
-  document.getElementById("message");
+const painted =
+  new Set();
+
+let coins = 0;
+
+
+/* ==========================================
+   HTML
+========================================== */
 
 const countEl =
   document.getElementById("count");
 
 const coinsEl =
   document.getElementById("coins");
+
+const messageEl =
+  document.getElementById("message");
 
 const titleEl =
   document.getElementById("editableTitle");
@@ -606,19 +644,9 @@ const completeEl =
   document.getElementById("complete");
 
 
-/* =====================================================
+/* ==========================================
    タイトル保存
-===================================================== */
-
-/*
-   タイトルをタップして変更可能。
-
-   入力したタイトルは
-   localStorageに保存されるので、
-
-   ページを再読み込みしても
-   タイトルが残ります。
-*/
+========================================== */
 
 const savedTitle =
   localStorage.getItem(
@@ -632,8 +660,6 @@ if (savedTitle !== null) {
 
 }
 
-
-/* タイトル変更時 */
 
 titleEl.addEventListener(
   "input",
@@ -652,9 +678,11 @@ titleEl.addEventListener(
 
 titleEl.addEventListener(
   "keydown",
-  function (event) {
+  function(event) {
 
-    if (event.key === "Enter") {
+    if (
+      event.key === "Enter"
+    ) {
 
       event.preventDefault();
 
@@ -666,9 +694,9 @@ titleEl.addEventListener(
 );
 
 
-/* =====================================================
-   都道府県名取得
-===================================================== */
+/* ==========================================
+   都道府県名
+========================================== */
 
 function getName(feature) {
 
@@ -689,26 +717,26 @@ function getName(feature) {
 }
 
 
-/* =====================================================
+/* ==========================================
    数字更新
-===================================================== */
+========================================== */
 
 function updateStats() {
 
   countEl.textContent =
-    state.painted.size;
+    painted.size;
 
   coinsEl.textContent =
-    state.coins;
+    coins;
 
 }
 
 
-/* =====================================================
-   都道府県タップ
-===================================================== */
+/* ==========================================
+   ★ 都道府県タップ
+========================================== */
 
-function selectPref(
+function togglePrefecture(
   name,
   element
 ) {
@@ -718,34 +746,37 @@ function selectPref(
   }
 
 
-  /* ==========================================
-     すでに塗られている場合
-     → もう一度タップで元に戻す
-  ========================================== */
+  /* ======================================
+     すでに色が付いている
+     ↓
+     白に戻す
+  ====================================== */
 
   if (
-    state.painted.has(name)
+    element.classList.contains(
+      "active"
+    )
   ) {
 
-    /* Setから削除 */
-
-    state.painted.delete(name);
-
-
-    /* コイン数を1減らす */
-
-    state.coins =
-      Math.max(
-        0,
-        state.coins - 1
-      );
-
-
-    /* 色を元に戻す */
+    /* CSSクラスを確実に削除 */
 
     element.classList.remove(
       "active"
     );
+
+
+    /* Setから削除 */
+
+    painted.delete(name);
+
+
+    /* コイン数も1減らす */
+
+    coins =
+      Math.max(
+        0,
+        coins - 1
+      );
 
 
     /* 表示更新 */
@@ -753,45 +784,35 @@ function selectPref(
     updateStats();
 
 
-    /* メッセージ */
-
     messageEl.textContent =
       "↩️ " +
       name +
-      " の色を元に戻しました。";
+      " を白に戻しました。";
 
 
     return;
-
   }
 
 
-  /* ==========================================
-     まだ塗られていない場合
-     → 色を付ける
-  ========================================== */
-
-  state.painted.add(name);
-
-
-  /* 999コインとしてカウント */
-
-  state.coins++;
-
-
-  /* 色を付ける */
+  /* ======================================
+     色が付いていない
+     ↓
+     オレンジにする
+  ====================================== */
 
   element.classList.add(
     "active"
   );
 
 
-  /* 数字更新 */
+  painted.add(name);
+
+
+  coins++;
+
 
   updateStats();
 
-
-  /* メッセージ */
 
   messageEl.textContent =
     "🎉 " +
@@ -799,12 +820,12 @@ function selectPref(
     " を塗りました！";
 
 
-  /* ==========================================
-     47都道府県すべて完成
-  ========================================== */
+  /* ======================================
+     47県完成
+  ====================================== */
 
   if (
-    state.painted.size === 47
+    painted.size === 47
   ) {
 
     messageEl.textContent =
@@ -819,201 +840,185 @@ function selectPref(
 }
 
 
-/* =====================================================
+/* ==========================================
    地図読み込み
-===================================================== */
+========================================== */
 
-function loadMap() {
+fetch(GEOJSON_URL)
 
-  fetch(GEOJSON_URL)
+  .then(function(response) {
 
-    .then(function (response) {
+    if (!response.ok) {
 
-      if (!response.ok) {
-
-        throw new Error(
-          "GeoJSON " +
-          response.status
-        );
-
-      }
-
-      return response.json();
-
-    })
-
-
-    .then(function (data) {
-
-
-      /* ======================================
-         都道府県だけを抽出
-      ====================================== */
-
-      const features =
-        data.features.filter(
-          function (feature) {
-
-            const name =
-              getName(feature);
-
-            return (
-              !!name &&
-              name !== "日本" &&
-              !name.includes("離島") &&
-              !name.includes("minor")
-            );
-
-          }
-        );
-
-
-      /* ======================================
-         地図を画面いっぱいにフィット
-      ====================================== */
-
-      const projection =
-        d3.geoMercator()
-          .fitExtent(
-            [
-              [18, 18],
-              [882, 742]
-            ],
-            {
-              type:
-                "FeatureCollection",
-
-              features:
-                features
-            }
-          );
-
-
-      /* 地図パス */
-
-      const path =
-        d3.geoPath(
-          projection
-        );
-
-
-      /* 一度クリア */
-
-      svg.selectAll("*")
-        .remove();
-
-
-      /* ======================================
-         都道府県を描画
-      ====================================== */
-
-      svg
-        .selectAll("path.pref")
-        .data(features)
-        .join("path")
-
-        .attr(
-          "class",
-          "pref"
-        )
-
-        .attr(
-          "d",
-          function (d) {
-
-            return path(d);
-
-          }
-        )
-
-        .attr(
-          "data-name",
-          function (d) {
-
-            return getName(d);
-
-          }
-        )
-
-        /* ==================================
-           タップイベント
-        ================================== */
-
-        .on(
-          "click",
-          function (event, d) {
-
-            event.preventDefault();
-
-            selectPref(
-              getName(d),
-              this
-            );
-
-          }
-        )
-
-        /* マウスを乗せたときの県名 */
-
-        .append("title")
-
-        .text(
-          function (d) {
-
-            return getName(d);
-
-          }
-        );
-
-
-      /* ======================================
-         読み込み完了
-      ====================================== */
-
-      document
-        .getElementById("loading")
-        .style.display = "none";
-
-
-      svg.style(
-        "display",
-        "block"
+      throw new Error(
+        "GeoJSON " +
+        response.status
       );
 
+    }
 
-      messageEl.textContent =
-        "色を塗りたい都道府県をタップしてください";
+    return response.json();
+
+  })
 
 
-    })
+  .then(function(data) {
 
 
     /* ======================================
-       エラー
+       47都道府県を取得
     ====================================== */
 
-    .catch(function (error) {
+    const features =
+      data.features.filter(
+        function(feature) {
 
-      console.error(error);
+          const name =
+            getName(feature);
 
-      document
-        .getElementById("loading")
-        .innerHTML =
-          "読み込みに失敗しました。<br>" +
-          "インターネット接続を確認してください。";
+          return (
+            name &&
+            name !== "日本" &&
+            !name.includes("離島") &&
+            !name.includes("minor")
+          );
 
-    });
+        }
+      );
 
-}
+
+    /* ======================================
+       地図を最大サイズにする
+    ====================================== */
+
+    const projection =
+      d3.geoMercator()
+        .fitExtent(
+          [
+            [5, 5],
+            [895, 755]
+          ],
+          {
+            type:
+              "FeatureCollection",
+
+            features:
+              features
+          }
+        );
 
 
-/* =====================================================
+    const path =
+      d3.geoPath(
+        projection
+      );
+
+
+    /* ======================================
+       地図描画
+    ====================================== */
+
+    svg
+      .selectAll("path")
+      .data(features)
+      .join("path")
+
+      .attr(
+        "class",
+        "pref"
+      )
+
+      .attr(
+        "d",
+        function(d) {
+
+          return path(d);
+
+        }
+      )
+
+      .attr(
+        "data-name",
+        function(d) {
+
+          return getName(d);
+
+        }
+      )
+
+
+      /* ==================================
+         ★ タップ
+      ================================== */
+
+      .on(
+        "click",
+        function(event, d) {
+
+          event.preventDefault();
+
+          event.stopPropagation();
+
+          const name =
+            getName(d);
+
+          togglePrefecture(
+            name,
+            this
+          );
+
+        }
+      )
+
+
+      .append("title")
+
+      .text(
+        function(d) {
+
+          return getName(d);
+
+        }
+      );
+
+
+    /* 読み込み完了 */
+
+    document
+      .getElementById("loading")
+      .style.display =
+        "none";
+
+
+    svg.style(
+      "display",
+      "block"
+    );
+
+
+  })
+
+
+  .catch(function(error) {
+
+    console.error(error);
+
+    document
+      .getElementById("loading")
+      .innerHTML =
+        "地図の読み込みに失敗しました。<br>" +
+        "インターネット接続を確認してください。";
+
+  });
+
+
+/* ==========================================
    COMPLETEを閉じる
-===================================================== */
+========================================== */
 
 document
   .getElementById("closeComplete")
-  .onclick = function () {
+  .onclick = function() {
 
     completeEl.classList.remove(
       "show"
@@ -1021,12 +1026,6 @@ document
 
   };
 
-
-/* =====================================================
-   初期化
-===================================================== */
-
-loadMap();
 
 </script>
 
